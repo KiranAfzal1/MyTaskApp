@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.firebase.firestore)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation(libs.firebase.auth)
     implementation("com.google.firebase:firebase-database:20.3.0")

@@ -1,27 +1,83 @@
 package com.example.mytask.repository
 
 import androidx.lifecycle.LiveData
-import com.example.mytask.data.TaskDao
+import androidx.lifecycle.MutableLiveData
 import com.example.mytask.data.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
+class TaskRepository {
 
-class TaskRepository(private val taskDao: TaskDao) {
+    private val db = FirebaseFirestore.getInstance()
 
-    val allTasks: LiveData<List<Task>> = taskDao.getAllTasks()
+    private val _allTasks = MutableLiveData<List<Task>>()
+    val allTasks: LiveData<List<Task>> get() = _allTasks
+
+    fun getAllTasks() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        db.collection("tasks")
+            .document(uid)
+            .collection("userTasks")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val tasks = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Task::class.java)?.copy(id = doc.id)
+                }
+                _allTasks.postValue(tasks)
+            }
+    }
 
     fun getTasksByCategory(category: String): LiveData<List<Task>> {
-        return taskDao.getTasksByCategory(category)
+        val tasksByCategory = MutableLiveData<List<Task>>()
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return tasksByCategory
+
+        db.collection("tasks")
+            .document(uid)
+            .collection("userTasks")
+            .whereEqualTo("category", category)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val filtered = snapshot.documents.mapNotNull { doc ->
+                    doc.toObject(Task::class.java)?.copy(id = doc.id)
+                }
+                tasksByCategory.postValue(filtered)
+            }
+
+        return tasksByCategory
     }
 
-    suspend fun insert(task: Task) {
-        taskDao.insertTask(task)
+    fun insert(task: Task, onComplete: (Boolean) -> Unit) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return onComplete(false)
+
+        db.collection("tasks")
+            .document(uid)
+            .collection("userTasks")
+            .add(task)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
     }
 
-    suspend fun update(task: Task) {
-        taskDao.updateTask(task)
+    fun update(taskId: String, updatedTask: Task, onComplete: (Boolean) -> Unit) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return onComplete(false)
+
+        db.collection("tasks")
+            .document(uid)
+            .collection("userTasks")
+            .document(taskId)
+            .set(updatedTask)
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
     }
 
-    suspend fun delete(task: Task) {
-        taskDao.deleteTask(task)
+    fun delete(taskId: String, onComplete: (Boolean) -> Unit) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return onComplete(false)
+
+        db.collection("tasks")
+            .document(uid)
+            .collection("userTasks")
+            .document(taskId)
+            .delete()
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { onComplete(false) }
     }
 }

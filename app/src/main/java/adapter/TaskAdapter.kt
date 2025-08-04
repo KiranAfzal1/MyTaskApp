@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mytask.R
 import com.example.mytask.data.Task
 
-
-
 class TaskAdapter(
     private val onEdit: (Task) -> Unit,
     private val onDelete: (Task) -> Unit,
@@ -53,7 +51,7 @@ class TaskAdapter(
                 titleText.setTextColor(itemView.context.getColor(android.R.color.darker_gray))
                 titleText.paintFlags = titleText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 editButton.visibility = View.GONE
-                deleteButton.visibility=View.GONE
+                deleteButton.visibility = View.GONE
             } else {
                 completedLayout.visibility = View.GONE
                 titleText.setTextColor(itemView.context.getColor(android.R.color.black))
@@ -88,7 +86,7 @@ class TaskAdapter(
 
 class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
     override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean =
-        oldItem.id == newItem.id
+        oldItem.id != null && oldItem.id == newItem.id
 
     override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean =
         oldItem == newItem

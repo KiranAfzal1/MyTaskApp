@@ -1,5 +1,6 @@
 package com.example.mytask
 
+import com.example.mytask.viewmodel.TaskViewModelFactory
 import android.content.Intent
 import android.widget.TextView
 import android.os.Bundle
@@ -9,15 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mytask.adapter.TaskAdapter
-import com.example.mytask.data.TaskDatabase
-import com.example.mytask.repository.TaskRepository
 import com.example.mytask.viewmodel.TaskViewModel
 import androidx.core.content.ContextCompat
 import android.graphics.Color
 import android.os.Build
 import android.content.res.ColorStateList
 import android.view.View
-import com.example.mytask.viewmodel.TaskViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 
@@ -53,6 +51,7 @@ class ViewTask : AppCompatActivity() {
         buttonWork = findViewById(R.id.button_work)
         buttonPersonal = findViewById(R.id.button_personal)
         buttonStudy = findViewById(R.id.button_study)
+
         val logoutButton = findViewById<Button>(R.id.logoutButton)
         logoutButton.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
@@ -63,23 +62,31 @@ class ViewTask : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        val dao = TaskDatabase.getDatabase(application).taskDao()
-        val repository = TaskRepository(dao)
-        val factory = TaskViewModelFactory(repository)
+        val factory = TaskViewModelFactory()
         viewModel = ViewModelProvider(this, factory)[TaskViewModel::class.java]
 
         taskAdapter = TaskAdapter(
             onEdit = { task ->
                 val intent = Intent(this, AddEditTaskActivity::class.java)
-                intent.putExtra("task_id", task.id)
+                intent.putExtra("task_id", task.id ?: "") // ✅ Safe Firestore ID
                 startActivity(intent)
             },
-            onDelete = { task -> viewModel.delete(task) },
+            onDelete = { task ->
+                task.id?.let {
+                    viewModel.delete(it) {
+                        viewModel.loadTasks() // ✅ Refresh after deletion
+                    }
+                }
+            },
             onCompletedChange = { task ->
-                viewModel.update(task)
-                updateList(getCurrentCategory())
+                task.id?.let {
+                    viewModel.update(it, task) {
+                        viewModel.loadTasks() // ✅ Refresh after update
+                    }
+                }
             }
         )
 
@@ -87,6 +94,7 @@ class ViewTask : AppCompatActivity() {
 
         buttonAll.setOnClickListener {
             setActiveButton(buttonAll)
+            viewModel.loadTasks()          // ✅ Load all tasks again
             updateList(null)
         }
         buttonWork.setOnClickListener {
@@ -107,6 +115,7 @@ class ViewTask : AppCompatActivity() {
         }
 
         setActiveButton(buttonAll)
+        viewModel.loadTasks()              // ✅ Load tasks at launch
         updateList(null)
     }
 

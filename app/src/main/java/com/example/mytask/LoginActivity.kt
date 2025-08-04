@@ -27,11 +27,14 @@ class LoginActivity : AppCompatActivity() {
         }
         val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
         val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
-        if (isLoggedIn) {
+        val user = FirebaseAuth.getInstance().currentUser
+
+        if (isLoggedIn && user != null) {
             startActivity(Intent(this, ViewTask::class.java))
             finish()
             return
         }
+
         setContentView(R.layout.activity_login)
 
         etEmail = findViewById(R.id.etEmail)

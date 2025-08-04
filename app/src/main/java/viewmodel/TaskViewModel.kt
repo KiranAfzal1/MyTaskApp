@@ -1,27 +1,31 @@
 package com.example.mytask.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.example.mytask.repository.TaskRepository
-import kotlinx.coroutines.launch
 import com.example.mytask.data.Task
 
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
-    val allTasks: LiveData<List<Task>> = repository.allTasks
+    val allTasks: LiveData<List<Task>> get() = repository.allTasks
 
     fun getTasksByCategory(category: String): LiveData<List<Task>> {
         return repository.getTasksByCategory(category)
     }
 
-    fun insert(task: Task) = viewModelScope.launch {
-        repository.insert(task)
+    fun insert(task: Task, onComplete: (Boolean) -> Unit) {
+        repository.insert(task, onComplete)
     }
 
-    fun update(task: Task) = viewModelScope.launch {
-        repository.update(task)
+    fun update(taskId: String, updatedTask: Task, onComplete: (Boolean) -> Unit) {
+        repository.update(taskId, updatedTask, onComplete)
     }
 
-    fun delete(task: Task) = viewModelScope.launch {
-        repository.delete(task)
+    fun delete(taskId: String, onComplete: (Boolean) -> Unit) {
+        repository.delete(taskId, onComplete)
+    }
+
+    fun loadTasks() {
+        repository.getAllTasks()
     }
 }

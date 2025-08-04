@@ -1,7 +1,8 @@
 package com.example.mytask
+
 import android.os.Build
-import android.graphics.Color
 import android.view.View
+import com.example.mytask.viewmodel.TaskViewModelFactory
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -10,12 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.mytask.data.Task
-import com.example.mytask.data.TaskDatabase
-import com.example.mytask.repository.TaskRepository
 import com.example.mytask.viewmodel.TaskViewModel
-import com.example.mytask.viewmodel.TaskViewModelFactory
 import java.util.*
-
 
 class AddEditTaskActivity : AppCompatActivity() {
 
@@ -23,11 +20,10 @@ class AddEditTaskActivity : AppCompatActivity() {
     private var selectedPriority: String = "Low"
     private var selectedCategory: String = "All"
     private var selectedDate: String = ""
-    private var taskId: Int = -1
+    private var taskId: String? = null  // Firestore uses String IDs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.add_edit_task_activity)
         setContentView(R.layout.add_edit_task_activity)
 
         window.statusBarColor = ContextCompat.getColor(this, R.color.light_green_bg)
@@ -38,15 +34,11 @@ class AddEditTaskActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or
                             View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
                     )
-        }
-
-        else {
+        } else {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-        val dao = TaskDatabase.getDatabase(application).taskDao()
-        val repository = TaskRepository(dao)
-        val factory = TaskViewModelFactory(repository)
+        val factory = TaskViewModelFactory()
         viewModel = ViewModelProvider(this, factory)[TaskViewModel::class.java]
 
         val titleInput = findViewById<EditText>(R.id.edit_text_title)
@@ -66,13 +58,10 @@ class AddEditTaskActivity : AppCompatActivity() {
         val goBack = findViewById<ImageView>(R.id.back_arrow)
         val titleText = findViewById<TextView>(R.id.titleText)
 
-        taskId = intent.getIntExtra("task_id", -1)
+        // Get Firestore task ID
+        taskId = intent.getStringExtra("task_id")
 
-        if (taskId != -1) {
-            titleText.text = "Update Task"
-        } else {
-            titleText.text = "Add New Task"
-        }
+        titleText.text = if (taskId != null) "Update Task" else "Add New Task"
 
         goBack.setOnClickListener {
             startActivity(Intent(this, ViewTask::class.java))
@@ -104,7 +93,9 @@ class AddEditTaskActivity : AppCompatActivity() {
 
         cancelBtn.setOnClickListener { finish() }
 
-        if (taskId != -1) {
+        // ✅ LOAD tasks BEFORE observing
+        if (taskId != null) {
+            viewModel.loadTasks() // <-- Ensure task data is loaded
             viewModel.allTasks.observe(this) { taskList ->
                 val task = taskList.find { it.id == taskId }
                 task?.let {
@@ -127,7 +118,7 @@ class AddEditTaskActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (taskId != -1) {
+            if (taskId != null) {
                 val updatedTask = Task(
                     id = taskId,
                     title = title,
@@ -137,8 +128,11 @@ class AddEditTaskActivity : AppCompatActivity() {
                     priority = selectedPriority,
                     category = selectedCategory
                 )
-                viewModel.update(updatedTask)
-                Toast.makeText(this, "Task Updated", Toast.LENGTH_SHORT).show()
+                viewModel.update(taskId!!, updatedTask) {
+                    Toast.makeText(this, "Task Updated", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, ViewTask::class.java))
+                    finish()
+                }
             } else {
                 val newTask = Task(
                     title = title,
@@ -148,12 +142,12 @@ class AddEditTaskActivity : AppCompatActivity() {
                     priority = selectedPriority,
                     category = selectedCategory
                 )
-                viewModel.insert(newTask)
-                Toast.makeText(this, "Task Saved", Toast.LENGTH_SHORT).show()
+                viewModel.insert(newTask) {
+                    Toast.makeText(this, "Task Saved", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, ViewTask::class.java))
+                    finish()
+                }
             }
-
-            startActivity(Intent(this, ViewTask::class.java))
-            finish()
         }
     }
 }
