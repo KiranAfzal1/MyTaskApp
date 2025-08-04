@@ -20,7 +20,7 @@ class AddEditTaskActivity : AppCompatActivity() {
     private var selectedPriority: String = "Low"
     private var selectedCategory: String = "All"
     private var selectedDate: String = ""
-    private var taskId: String? = null  // Firestore uses String IDs
+    private var taskId: String? = null  
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +58,7 @@ class AddEditTaskActivity : AppCompatActivity() {
         val goBack = findViewById<ImageView>(R.id.back_arrow)
         val titleText = findViewById<TextView>(R.id.titleText)
 
-        // Get Firestore task ID
+
         taskId = intent.getStringExtra("task_id")
 
         titleText.text = if (taskId != null) "Update Task" else "Add New Task"
@@ -93,9 +93,9 @@ class AddEditTaskActivity : AppCompatActivity() {
 
         cancelBtn.setOnClickListener { finish() }
 
-        // ✅ LOAD tasks BEFORE observing
+
         if (taskId != null) {
-            viewModel.loadTasks() // <-- Ensure task data is loaded
+            viewModel.loadTasks() 
             viewModel.allTasks.observe(this) { taskList ->
                 val task = taskList.find { it.id == taskId }
                 task?.let {
