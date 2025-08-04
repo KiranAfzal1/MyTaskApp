@@ -1,9 +1,9 @@
 package com.example.mytask.viewmodel
 
 import androidx.lifecycle.*
-import com.example.mytask.data.Task
 import com.example.mytask.repository.TaskRepository
 import kotlinx.coroutines.launch
+import com.example.mytask.data.Task
 
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 

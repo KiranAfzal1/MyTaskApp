@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mytask.R
 import com.example.mytask.data.Task
 
+
+
 class TaskAdapter(
     private val onEdit: (Task) -> Unit,
     private val onDelete: (Task) -> Unit,

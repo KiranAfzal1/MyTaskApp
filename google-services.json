@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "961308205232",
+    "firebase_url": "https://mytaskapp-ddd6e-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "mytaskapp-ddd6e",
+    "storage_bucket": "mytaskapp-ddd6e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961308205232:android:81c11026b8fce5a3ee9b75",
+        "android_client_info": {
+          "package_name": "com.example.mytask"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFTLZ0jSBAzCRKpbDAnqbQ3dPoN1TQ5lE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

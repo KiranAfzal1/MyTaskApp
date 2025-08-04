@@ -19,6 +19,7 @@ import android.content.res.ColorStateList
 import android.view.View
 import com.example.mytask.viewmodel.TaskViewModelFactory
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseAuth
 
 class ViewTask : AppCompatActivity() {
 
@@ -52,7 +53,16 @@ class ViewTask : AppCompatActivity() {
         buttonWork = findViewById(R.id.button_work)
         buttonPersonal = findViewById(R.id.button_personal)
         buttonStudy = findViewById(R.id.button_study)
-
+        val logoutButton = findViewById<Button>(R.id.logoutButton)
+        logoutButton.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
+            val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
+            sharedPref.edit().clear().apply()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         val dao = TaskDatabase.getDatabase(application).taskDao()
