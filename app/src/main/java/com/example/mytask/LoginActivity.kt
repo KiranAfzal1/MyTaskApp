@@ -59,7 +59,7 @@ class LoginActivity : AppCompatActivity() {
                         val sharedPref = getSharedPreferences("MyAppPrefs", MODE_PRIVATE)
                         sharedPref.edit().putBoolean("isLoggedIn", true).apply()
                         Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, ViewTask::class.java))  // Navigate to your Task screen
+                        startActivity(Intent(this, ViewTask::class.java)) 
                         finish()
                     } else {
                         Toast.makeText(this, "Login failed: ${task.exception?.message}", Toast.LENGTH_LONG).show()
