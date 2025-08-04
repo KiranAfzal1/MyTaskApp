@@ -71,20 +71,20 @@ class ViewTask : AppCompatActivity() {
         taskAdapter = TaskAdapter(
             onEdit = { task ->
                 val intent = Intent(this, AddEditTaskActivity::class.java)
-                intent.putExtra("task_id", task.id ?: "") // ✅ Safe Firestore ID
+                intent.putExtra("task_id", task.id ?: "")
                 startActivity(intent)
             },
             onDelete = { task ->
                 task.id?.let {
                     viewModel.delete(it) {
-                        viewModel.loadTasks() // ✅ Refresh after deletion
+                        viewModel.loadTasks() 
                     }
                 }
             },
             onCompletedChange = { task ->
                 task.id?.let {
                     viewModel.update(it, task) {
-                        viewModel.loadTasks() // ✅ Refresh after update
+                        viewModel.loadTasks() 
                     }
                 }
             }
@@ -94,7 +94,7 @@ class ViewTask : AppCompatActivity() {
 
         buttonAll.setOnClickListener {
             setActiveButton(buttonAll)
-            viewModel.loadTasks()          // ✅ Load all tasks again
+            viewModel.loadTasks()          
             updateList(null)
         }
         buttonWork.setOnClickListener {
@@ -115,7 +115,7 @@ class ViewTask : AppCompatActivity() {
         }
 
         setActiveButton(buttonAll)
-        viewModel.loadTasks()              // ✅ Load tasks at launch
+        viewModel.loadTasks()              
         updateList(null)
     }
 
