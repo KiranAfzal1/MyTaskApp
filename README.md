@@ -53,9 +53,9 @@ This project includes a `google-services.json` file **only for demo/testing purp
 ![WhatsApp Image 2025-08-04 at 15 16 39_0530cfd9](https://github.com/user-attachments/assets/ce68d0b6-335d-4ecf-a37b-1d8c482e74d9)
 
 ### Add Task
-![WhatsApp Image 2025-07-27 at 22 14 04_b024eac8](https://github.com/user-attachments/assets/e8bd6a0d-f415-4e83-985e-ae1a10866803)
+![WhatsApp Image 2025-08-04 at 21 29 12_c907f209](https://github.com/user-attachments/assets/c5073faf-e500-4ff6-bf41-95b8e4c7459b)
 
 ### Update Task
-![WhatsApp Image 2025-07-27 at 22 14 04_3e383341](https://github.com/user-attachments/assets/bd74ea09-73dc-47ab-aa93-80672ac92469)
+![WhatsApp Image 2025-08-04 at 21 27 46_322b6bac](https://github.com/user-attachments/assets/0be1ab2b-f3c6-4085-8aa3-8fce64c37209)
 
 
