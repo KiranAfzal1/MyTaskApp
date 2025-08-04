@@ -22,7 +22,7 @@ This project includes a `google-services.json` file **only for demo/testing purp
 - The Firebase project linked to this file is **not used in production**.
 - **No real or sensitive user data** is stored or processed.
 - **No billing** is enabled on the Firebase project.
-- If you plan to clone this app as your own, please generate and use your own `google-services.json` file by creating a Firebase project.
+- If you plan to make a similar app, please generate and use your own `google-services.json` file by creating a Firebase project.
 
 > Do **not** reuse the included Firebase config in production apps.
 
